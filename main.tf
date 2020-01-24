@@ -1,7 +1,7 @@
 resource "ibm_compute_ssh_key" "ssh_key" {
   label      = "anspro3"
   notes      = "${var.ssh_notes}"
-  public_key = "${file("~/.ssh/id_rsa.pub")}"
+  public_key = ""
 }
 
 ########################################################
