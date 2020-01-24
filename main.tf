@@ -1,7 +1,7 @@
 resource "ibm_compute_ssh_key" "ssh_key" {
   label      = "anspro3"
   notes      = "${var.ssh_notes}"
-  public_key = "${file("./rsa.pub")}"
+  public_key = "${file("~/.ssh/id_rsa.pub")}"
 }
 
 ########################################################
@@ -23,37 +23,36 @@ resource "ibm_compute_vm_instance" "ans_webapp1" {
   private_network_only       = false
 
   # user_metadata = "${data.template_cloudinit_config.app_userdata.rendered}"
-  tags          = ["group:ansible_provisioner","group:servers"]
+  tags = ["group:ansible_provisioner", "group:servers"]
+
   connection {
-    //user = "root"
-    private_key = "${file("./rsa")}"
+    //user = "root"  #private_key = "${file("~/.ssh/id_rsa")}"
   }
+
   provisioner "ansible" {
     plays {
       playbook = {
         file_path = "${path.module}/ansible-data/playbooks/install-tree.yml"
+
         roles_path = [
-            "${path.module}/ansible-data/roles"
+          "${path.module}/ansible-data/roles",
         ]
       }
-      groups = ["servers"]
+
+      groups  = ["servers"]
       verbose = true
     }
+
     ansible_ssh_settings {
       insecure_no_strict_host_key_checking = "${var.insecure_no_strict_host_key_checking}"
     }
-  }    
+  }
 }
 
-
-
 data "ibm_resource_group" "group" {
-  name = "default"
+  name = "Default"
 }
 
 variable "insecure_no_strict_host_key_checking" {
   default = true
 }
-
-
-      
